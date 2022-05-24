@@ -1,0 +1,38 @@
+# Docker composeのバージョン
+version: "3.9"
+# コンテナを定義
+services:
+  db: # コンテナの名前(任意?)
+    # DockerHubにあるmySQLの5.7バージョンのイメージ
+    image: mysql:5.7 
+    volumes:  # volumesで定義したdb_dataを/var/lib/mysqlにmountしている
+              ## mount ・・・ volumesで定義したフォルダを同期させているイメージ 
+      - db_data:/var/lib/mysql
+    restart: always
+    # 環境変数を設定
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    
+  wordpress: # コンテナの名前(任意?)
+    depends_on:
+      - db
+    # DockerHubにあるwordpressの最新バージョンのイメージ
+    image: wordpress:latest
+    volumes:
+      - wordpress_data:/var/www/html
+    ports:
+      - "8000:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+# dockerボリュームを設定
+## 設定しないとdockerをシャットダウンしたときデータベースが消えてしまう
+volumes:
+  db_data: {}
+  wordpress_data: {}
