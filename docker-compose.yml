@@ -11,8 +11,11 @@ services:
     restart: always
     # 環境変数を設定
     environment:
+      # スーパーユーザーのrootアカウントのパスワードを指定
       MYSQL_ROOT_PASSWORD: somewordpress
+      # イメージ起動時に作成するデータベース名を指定
       MYSQL_DATABASE: wordpress
+      # 新規ユーザーのユーザー名とパスワード
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
     
@@ -31,6 +34,20 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
+
+  # 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: wordpress_docker_phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=password
+    depends_on:
+      - db
+    ports:
+      - 8890:80
 # dockerボリュームを設定
 ## 設定しないとdockerをシャットダウンしたときデータベースが消えてしまう
 volumes:
