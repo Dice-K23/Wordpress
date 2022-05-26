@@ -16,8 +16,8 @@ services:
       # イメージ起動時に作成するデータベース名を指定
       MYSQL_DATABASE: wordpress
       # 新規ユーザーのユーザー名とパスワード
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
+      MYSQL_USER: QuN104
+      MYSQL_PASSWORD: w_QuNisAngel_p
     
   wordpress: # コンテナの名前(任意?)
     depends_on:
@@ -31,19 +31,23 @@ services:
     restart: always
     environment:
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_USER: QuN104 # dbのMYSQL_USER
+      WORDPRESS_DB_PASSWORD: w_QuNisAngel_p # dbのw_QuNisAngel_p
       WORDPRESS_DB_NAME: wordpress
 
-  # 
+  # phpMyAdmin ... ブラウザ上で簡単にデータベース(MySQL)を操作できるツール
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: wordpress_docker_phpmyadmin
-    environment:
-      - PMA_ARBITRARY=1
-      - PMA_HOST=db
-      - PMA_USER=root
-      - PMA_PASSWORD=password
+    restart: always
+    #environment:
+      # ログインフォームでデータベースサーバーに
+      #- PMA_ARBITRARY=1
+      # 使用するデータベースサーバー
+      #- PMA_HOST=db
+      #- PMA_USER=wordpress
+      #- PMA_PASSWORD=wordpress
+    
     depends_on:
       - db
     ports:
