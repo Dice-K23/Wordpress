@@ -1,55 +1,37 @@
-# Docker composeのバージョン
-version: "3.9"
-# コンテナを定義
+version: "3.7"
 services:
-  db: # コンテナの名前(任意?)
-    # DockerHubにあるmySQLの5.7バージョンのイメージ
-    image: mysql:5.7 
-    volumes:  # volumesで定義したdb_dataを/var/lib/mysqlにmountしている
-              ## mount ・・・ volumesで定義したフォルダを同期させているイメージ 
-      - db_data:/var/lib/mysql
-    restart: always
-    # 環境変数を設定
+  db:
+    image: mysql:5.7
+    container_name: wp_mysql
+    #restart: always
     environment:
-      # スーパーユーザーのrootアカウントのパスワードを指定
-      MYSQL_ROOT_PASSWORD: somewordpress
-      # イメージ起動時に作成するデータベース名を指定
-      MYSQL_DATABASE: wordpress
-      # 新規ユーザーのユーザー名とパスワード
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
-    
-  wordpress: # コンテナの名前(任意?)
-    depends_on:
-      - db
-    # DockerHubにあるwordpressの最新バージョンのイメージ
-    image: wordpress:latest
-    volumes:
-      - wordpress_data:/var/www/html
-    ports:
-      - "8000:80"
-    restart: always
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress
+      MYSQL_ROOT_PASSWORD: wordpress # rootユーザのパスワード（任意に指定可）
+      MYSQL_DATABASE: wordpress # WordPress用データベース名（任意に指定可）
+      MYSQL_USER: wordpress # WordPress用接続ユーザ名（任意に指定可）
+      MYSQL_PASSWORD: wordpress # WordPress用パスワード（任意に指定可）
 
-  # 
+  wordpress:
+    image: wordpress:latest
+    container_name: wp
+    #restart: always
+    depends_on:
+     - db
+    ports:
+     - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db # データベースサーバ名：ポート番号
+      WORDPRESS_DB_NAME: wordpress # WordPress用データベース名(dbの内容に合わせる)
+      WORDPRESS_DB_USER: wordpress # WordPress用接続ユーザ名(dbの内容に合わせる)
+      WORDPRESS_DB_PASSWORD: wordpress # WordPress用パスワード(dbの内容に合わせる)
+      WORDPRESS_DEBUG : 1  #デバッグモードON
+    volumes:
+       - ./html:/var/www/html
+       
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
-    container_name: wordpress_docker_phpmyadmin
-    environment:
-      - PMA_ARBITRARY=1
-      - PMA_HOST=db
-      - PMA_USER=root
-      - PMA_PASSWORD=password
+    container_name: phpmyadmin_ingrid
+    #restart: always
     depends_on:
       - db
     ports:
-      - 8890:80
-# dockerボリュームを設定
-## 設定しないとdockerをシャットダウンしたときデータベースが消えてしまう
-volumes:
-  db_data: {}
-  wordpress_data: {}
+      - 10099:80
