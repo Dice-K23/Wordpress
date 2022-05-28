@@ -2,7 +2,7 @@
 version: "3.9"
 # コンテナを定義
 services:
-  db: # コンテナの名前(任意?)
+  db: # 任意のサービス名
     # DockerHubにあるmySQLの5.7バージョンのイメージ
     image: mysql:5.7 
     volumes:  # volumesで定義したdb_dataを/var/lib/mysqlにmountしている
@@ -16,22 +16,24 @@ services:
       # イメージ起動時に作成するデータベース名を指定
       MYSQL_DATABASE: wordpress
       # 新規ユーザーのユーザー名とパスワード
-      MYSQL_USER: QuN104
+      MYSQL_USER: QN104
       MYSQL_PASSWORD: w_QuNisAngel_p
     
-  wordpress: # コンテナの名前(任意?)
+  wordpress: # 任意のサービス名
     depends_on:
       - db
     # DockerHubにあるwordpressの最新バージョンのイメージ
     image: wordpress:latest
     volumes:
       - wordpress_data:/var/www/html
+      #- ./php/php.ini:/usr/local/etc/php/conf.d/php.ini 
+      # ホストの作業フォルダ内「./php/php.ini」とコンテナ内「/usr/local/etc/php/conf.d/php.ini」を同期 ※注意！
     ports:
       - "8000:80"
     restart: always
     environment:
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: QuN104 # dbのMYSQL_USER
+      WORDPRESS_DB_USER: QN104 # dbのQN104
       WORDPRESS_DB_PASSWORD: w_QuNisAngel_p # dbのw_QuNisAngel_p
       WORDPRESS_DB_NAME: wordpress
 
